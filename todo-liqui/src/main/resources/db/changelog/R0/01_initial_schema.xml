@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="utf-8"?>
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+                   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                   xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.4.xsd">
+
+    <property name="now" value="now()" dbms="h2"/>
+    <property name="now" value="now()" dbms="oracle"/>
+    <property name="autoIncrement" value="true"/>
+
+    <!-- The initial schema. -->
+    <changeSet id="01" author="SAB">
+
+        <createTable tableName="REF_USER">
+            <column name="ID" type="bigint" autoIncrement="${autoIncrement}">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+            <column name="NAME" type="varchar(100)"/>
+        </createTable>
+
+        <createTable tableName="REF_TODO">
+            <column name="ID" type="bigint" autoIncrement="${autoIncrement}">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+            <column name="USER_ID" type="bigint"/>
+            <column name="TITLE" type="varchar(100)"/>
+            <column name="DESCRIPTION" type="varchar(100)"/>
+            <column name="TARGET_DATE" type="date"/>
+            <column name="IS_DONE" type="boolean"/>
+        </createTable>
+
+        <addForeignKeyConstraint baseColumnNames="USER_ID"
+                                 baseTableName="REF_TODO" constraintName="FK_TODO_USER"
+                                 referencedColumnNames="ID" referencedTableName="REF_USER"/>
+
+        <loadData file="users.csv" relativeToChangelogFile="true"
+                  separator=";" tableName="REF_USER">
+        </loadData>
+
+    </changeSet>
+
+    <changeSet author="SAB" id="tagDatabase">
+        <tagDatabase tag="v0.0.1"/>
+    </changeSet>
+
+</databaseChangeLog>
